@@ -3,6 +3,7 @@ package com.example.listycity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,12 +18,16 @@ import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
+
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     ListView cityList;
     ArrayAdapter<String> cityAdapter;
     ArrayList<String> dataList;
+
+    String selected = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +63,24 @@ public class MainActivity extends AppCompatActivity {
 
         cityAdapter = new ArrayAdapter<>(this,R.layout.content, dataList);
         cityList.setAdapter(cityAdapter);
+        cityList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selected = (String) parent.getItemAtPosition(position);
+                Toast.makeText(MainActivity.this, "Selected city: " + selected, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
     private void showInputDialog(int opt) {
         final EditText input = new EditText(this);
-        input.setHint("Enter your text");
+        if(opt == 0 && !Objects.equals(selected, "")){
+            input.setText(selected);
+        }
+        input.setHint("Enter city name");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enter Information")
-                .setMessage("Please input your text below:")
+            if(opt == 0){builder.setTitle("Delete City");}
+            if(opt == 1){builder.setTitle("Add City");}
+                builder.setMessage("Enter a city name:")
                 .setView(input)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
